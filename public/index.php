@@ -19,7 +19,8 @@ $app->add(function ($request, $handler) {
     $origin = $request->getHeaderLine('Origin');
     $allowedOrigins = [
         'http://localhost:5173',
-        'https://product-management-deploy-git-main-bundets-projects.vercel.app'
+        'https://product-management-deploy-git-main-bundets-projects.vercel.app',
+        'https://product-management-deploy.vercel.app',
     ];
 
     if (in_array($origin, $allowedOrigins)) {
