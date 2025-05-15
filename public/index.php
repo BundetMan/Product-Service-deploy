@@ -16,12 +16,23 @@ $app->options('/{routes:.+}', function ($request, $response, $args) {
 $app->add(function ($request, $handler) {
     $response = $handler->handle($request);
 
-    return $response
-        ->withHeader('Access-Control-Allow-Origin', 'http://localhost:5173','https://product-management-deploy-git-main-bundets-projects.vercel.app')
-        ->withHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Accept, Origin, Authorization')
-        ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
-        ->withHeader('Access-Control-Allow-Credentials', 'true');
+    $origin = $request->getHeaderLine('Origin');
+    $allowedOrigins = [
+        'http://localhost:5173',
+        'https://product-management-deploy-git-main-bundets-projects.vercel.app'
+    ];
+
+    if (in_array($origin, $allowedOrigins)) {
+        $response = $response
+            ->withHeader('Access-Control-Allow-Origin', $origin)
+            ->withHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Accept, Origin, Authorization')
+            ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+            ->withHeader('Access-Control-Allow-Credentials', 'true');
+    }
+
+    return $response;
 });
+
 
 // Define a test route
 $app->get('/', function ($request, $response, $args) {
