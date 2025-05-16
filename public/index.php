@@ -5,7 +5,6 @@ use Slim\Factory\AppFactory;
 require __DIR__ . '/../vendor/autoload.php';
 require __DIR__ . '/../src/config.php';
 
-
 $app = AppFactory::create();
 
 $app->options('/{routes:.+}', function ($request, $response, $args) {
@@ -127,5 +126,95 @@ $app->delete('/product/delete/{id}', function ($request, $response, $args){
     $response->getBody()->write(json_encode(['message' => 'Product deleted successfully']));
     return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
 });
+
+// recieive email and send to discord
+$app->post('/contact/send', function ($request, $response, $args) {
+    $body = $request->getBody()->getContents();
+    $params = json_decode($body, true);
+
+    $name = htmlspecialchars($params['name'] ?? 'N/A');
+    $email = htmlspecialchars($params['email'] ?? 'N/A');
+    $message = htmlspecialchars($params['message'] ?? 'N/A');
+
+    $discordWebhook = 'https://discord.com/api/webhooks/1372948793586352148/er2TyC9SFkzCeQoZWIc-La6la713IDqXnpHtt-k6W4o_PaiwcRnbck-0XePyeA2nhbQ2'; 
+
+    $data = [
+        'username' => 'Contact Bot',
+        'embeds' => [[
+            'title' => '📩 New Contact Message',
+            'color' => 7506394,
+            'fields' => [
+                ['name' => '👤 Name', 'value' => $name, 'inline' => false],
+                ['name' => '📧 Email', 'value' => $email, 'inline' => false],
+                ['name' => '💬 Message', 'value' => $message, 'inline' => false],
+            ],
+            'timestamp' => date('c'),
+        ]]
+    ];
+
+    $ch = curl_init($discordWebhook);
+    curl_setopt($ch, CURLOPT_POST, 1);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+    curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+    $result = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+
+    if ($httpCode >= 200 && $httpCode < 300) {
+        $response->getBody()->write(json_encode(['status' => 'success']));
+        return $response->withHeader('Content-Type', 'application/json');
+    } else {
+        $response->getBody()->write(json_encode(['status' => 'error', 'message' => 'Failed to notify Discord']));
+        return $response->withStatus(500)->withHeader('Content-Type', 'application/json');
+    }
+});
+
+//recieve feedback and send to discord
+$app->post('/feedback/send', function ($request, $response, $args) {
+    $body = $request->getBody()->getContents();
+    $params = json_decode($body, true);
+
+    $name = htmlspecialchars($params['name'] ?? 'N/A');
+    $email = htmlspecialchars($params['email'] ?? 'N/A');
+    $message = htmlspecialchars($params['message'] ?? 'N/A');
+
+    $webhook = 'https://discord.com/api/webhooks/1372948793586352148/er2TyC9SFkzCeQoZWIc-La6la713IDqXnpHtt-k6W4o_PaiwcRnbck-0XePyeA2nhbQ2';
+
+    $data = [
+        'username' => 'Feedback Bot',
+        'embeds' => [[
+            'title' => '📝 New Feedback Received',
+            'color' => 3447003,
+            'fields' => [
+                ['name' => '👤 Name', 'value' => $name, 'inline' => false],
+                ['name' => '📧 Email', 'value' => $email, 'inline' => false],
+                ['name' => '💬 Message', 'value' => $message, 'inline' => false],
+            ],
+            'timestamp' => date('c'),
+        ]]
+    ];
+
+    $ch = curl_init($webhook);
+    curl_setopt($ch, CURLOPT_POST, 1);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+    curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+    $result = curl_exec($ch);
+    $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+
+    if ($status >= 200 && $status < 300) {
+        $response->getBody()->write(json_encode(['status' => 'success']));
+        return $response->withHeader('Content-Type', 'application/json');
+    } else {
+        $response->getBody()->write(json_encode(['status' => 'error', 'message' => 'Failed to send']));
+        return $response->withStatus(500)->withHeader('Content-Type', 'application/json');
+    }
+});
+
+
 $app->run();
     
