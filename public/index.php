@@ -4,6 +4,8 @@ use Slim\Factory\AppFactory;
 
 require __DIR__ . '/../vendor/autoload.php';
 require __DIR__ . '/../src/config.php';
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/..');
+$dotenv->load();
 
 $app = AppFactory::create();
 
@@ -135,7 +137,7 @@ $app->post('/contact/send', function ($request, $response, $args) {
     $email = htmlspecialchars($params['email'] ?? 'N/A');
     $message = htmlspecialchars($params['message'] ?? 'N/A');
 
-    $discordWebhook = 'https://discord.com/api/webhooks/1372948793586352148/er2TyC9SFkzCeQoZWIc-La6la713IDqXnpHtt-k6W4o_PaiwcRnbck-0XePyeA2nhbQ2'; 
+    $discordWebhook = $_ENV['WEBHOOK_URL']; 
 
     $data = [
         'username' => 'Contact Bot',
@@ -179,7 +181,7 @@ $app->post('/feedback/send', function ($request, $response, $args) {
     $email = htmlspecialchars($params['email'] ?? 'N/A');
     $message = htmlspecialchars($params['message'] ?? 'N/A');
 
-    $webhook = 'https://discord.com/api/webhooks/1372948793586352148/er2TyC9SFkzCeQoZWIc-La6la713IDqXnpHtt-k6W4o_PaiwcRnbck-0XePyeA2nhbQ2';
+    $webhook = $_ENV['WEBHOOK_URL'];
 
     $data = [
         'username' => 'Feedback Bot',
