@@ -1,6 +1,5 @@
 # Ignore environment config
 .env
-/src/.env
 # Composer vendor folder
 /vendor/
 
