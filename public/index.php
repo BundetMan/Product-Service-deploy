@@ -7,11 +7,21 @@ try {
     $dotenv = Dotenv\Dotenv::createImmutable(dirname(__DIR__));
     $dotenv->load();
 
-    $dotenv->required(['DB_HOST', 'DB_NAME', 'DB_USER', 'DB_PASS'])->notEmpty();
-    // $dotenv->required(['WEBHOOK_URL'])->notEmpty();
 } catch (\Dotenv\Exception\InvalidPathException $e) {
     error_log("Warning: .env file not found. Using system environment variables.");
 }
+
+$appEnv = $_ENV['APP_ENV'] ?? 'production';
+
+// Set error reporting based on environment
+if ($appEnv === 'development') {
+    error_reporting(E_ALL);
+    ini_set('display_errors', '1');
+} else {
+    error_reporting(0);
+    ini_set('display_errors', '0');
+}
+
 require __DIR__ . '/../src/config.php';
 
 $app = AppFactory::create();

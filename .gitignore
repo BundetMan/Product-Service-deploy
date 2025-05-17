@@ -1,4 +1,5 @@
-# Ignore environment config
+# environment variables
+# This file is used to ignore files and directories that should not be tracked by Git.
 .env
 # Composer vendor folder
 /vendor/
