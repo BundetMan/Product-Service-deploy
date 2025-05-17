@@ -3,8 +3,15 @@
 use Slim\Factory\AppFactory;
 
 require __DIR__ . '/../vendor/autoload.php';
-$dotenv = Dotenv\Dotenv::createImmutable(dirname(__DIR__));
-$dotenv->load();
+try {
+    $dotenv = Dotenv\Dotenv::createImmutable(dirname(__DIR__));
+    $dotenv->load();
+
+    $dotenv->required(['DB_HOST', 'DB_NAME', 'DB_USER', 'DB_PASS'])->notEmpty();
+    // $dotenv->required(['WEBHOOK_URL'])->notEmpty();
+} catch (\Dotenv\Exception\InvalidPathException $e) {
+    error_log("Warning: .env file not found. Using system environment variables.");
+}
 require __DIR__ . '/../src/config.php';
 
 $app = AppFactory::create();
