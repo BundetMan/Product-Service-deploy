@@ -4,7 +4,7 @@ use Slim\Factory\AppFactory;
 
 require __DIR__ . '/../vendor/autoload.php';
 require __DIR__ . '/../src/config.php';
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../.env');
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../');
 $dotenv->load();
 
 $app = AppFactory::create();
