@@ -1,9 +1,9 @@
 # Ignore environment config
 .env
-
+/src/.env
 # Composer vendor folder
 /vendor/
-/src/.env
+
 # IDE/editor folders
 .idea/
 .vscode/
